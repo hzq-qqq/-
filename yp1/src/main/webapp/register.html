@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+
+    <script>
+        function checkUsername() {
+            // 获取用户名的值
+            var username = $("#username").val();
+            // 定义正则表达式
+            var reg_username = /^\w{8,20}$/;
+            // 判断
+             var flag = reg_username.test(username);
+             if (flag){
+                 $("#username").css("border","");
+             }
+             else {
+                 $("#username").css("border","1px solid red");
+             }
+            return flag;
+        }
+        function checkPassword() {
+            // 获取值
+            var password = $("#password").val();
+            // 定义正则表达式
+            var reg_password= /^\w{8,20}$/;
+            // 判断
+            var flag = reg_password.test(password);
+            if (flag){
+                $("#password").css("border","");
+            }
+            else {
+                $("#password").css("border","1px solid red");
+            }
+            return flag;
+        }
+        function checkEmail() {
+            // 获取值
+            var email = $("#email").val();
+            // 定义正则表达式 175@22.com
+            var reg_email = /^\w+@\w+\.\w+$/;
+            // 判断
+            var flag = reg_email.test(email);
+            if (flag){
+                $("#email").css("border","");
+            }
+            else {
+                $("#email").css("border","1px solid red");
+            }
+            return flag;
+        }
+        $(function () {
+            $("#yp_reg").submit(function () {
+                if (checkUsername()&&checkPassword()&&checkEmail()){
+                    $.post("/main/reg",$(this).serialize(),function (data) {
+                        if (data.status){
+                            location.href = "index.html";
+                        }
+                        $("#errMsg").html(data.errMsg);
+                    });
+                }
+                return false;
+            });
+
+            $("#username").blur(checkUsername);
+            $("#password").blur(checkPassword);
+            $("#email").blur(checkEmail);
+        });
+    </script>
+</head>
+<body>
+<h3>用户注册</h3>
+<div id="errMsg" style="color: red"></div>
+<form action="" method="get" id="yp_reg">
+    <table >
+    <tr> <td class="right">用户名：</td> <td><input type="text" name="uName" id="username"/></td></tr>
+    <tr> <td class="right">密码：</td><td><input type="text" name="uPwd" id="password"/></td></tr>
+    <tr><td class="right">Vip:</td><td> <select  name="vip">
+                                           <option>yes</option>
+                                           <option>no</option>
+                                        </select>
+                                         </td></tr>
+    <tr><td class="right">电子邮箱：</td><td><input type="text" name="uEmail" id="email"/></td></tr>
+    </table>
+    <input type="submit" value="注册"/>
+    <input type="reset" value="重置"></td>  </tr>
+</form>
+</body>
+</html>

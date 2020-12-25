@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>云盘基本功能</title>
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <style>
+        #yp_user{
+            border: 1px solid red;
+            width: 100px;
+            height: 50px;
+        }
+        #yp_fol{
+            border: 1px solid red;
+            width: 300px;
+            height: 600px;
+            float: left;
+        }
+        #yp_doc{
+            border: 1px solid red;
+            width: 700px;
+            height: 600px;
+            float: right;
+        }
+    </style>
+    <script>
+
+        function fun(fid)
+           {
+               // alert(fid);
+               $.post("/main/findDoc",{fid:fid}, function (data)
+               {
+                   var li = '        <tr>\n' +
+                       '            <th><h3>文件名</h3></th>\n' +
+                       '            <th><h3>大小</h3></th>\n' +
+                       '            <th><h3>上传时间</h3></th>\n' +
+                       '            <th><h3>下载</h3></th>\n' +
+                       '        </tr>';
+                   for (var i = 0; i < data.length; i++)
+                   {
+                       var lii = '        <tr>\n' +
+                           '            <td><h3>' + data[i].dname + '</h3></td>\n' +
+                           '            <td><h3>' + data[i].dsize + 'KB' + '</h3></td>\n' +
+                           '            <td><h3>' + data[i].dupload + '</h3></td>\n' +
+                           '            <th><h3><a href="/main/docUpload?docName='+data[i].dname+'">下载</a></h3></th>\n' +
+                           '        </tr>';
+                       li += lii;
+                   }
+                   $("#yp_doc1").html(li);
+               });
+           }
+               $(function ()
+               {
+                   //获取用户信息
+                   $.post("/main/findUserName", {}, function (data) {
+                       $("#yp_user").html("欢迎你：" + data.username);
+                   });
+                   // 获取该用户的文件夹信息
+                   $.post("/main/findFol", {}, function (data) {
+                       var li = '<tr><th>文件夹</th></tr>';
+                       for (var i = 0; i < data.length; i++) {
+                           var lii = '<tr><td><button onclick="fun(' + data[i].fid + ')">' + data[i].fname + '</button></td></tr>';
+                           li += lii;
+                       }
+                       $("#yp_fol1").html(li);
+                   })
+               });
+
+
+               function newDol() {
+                   $.ajax({
+                       url: "/main/newDol",
+                       type: "post",
+                       data: new FormData($("#yp_newDoc").get(0)),
+                       cache: false,
+                       processData: false,
+                       contentType: false,
+                       success: function (data) {
+                           var lii = '        <tr>\n' +
+                               '            <td><h3>' + data.dname + '</h3></td>\n' +
+                               '            <td><h3>' + data.dsize + 'KB' + '</h3></td>\n' +
+                               '            <td><h3>' + data.dupload + '</h3></td>\n' +
+                               '            <th><h3><a href="/main/docUpload?docName='+data.dname+'">下载</a></h3></th>\n' +
+                               '        </tr>';
+                           $("#yp_doc1").append(lii);
+                       }
+                   });
+               }
+
+               $(function () {
+                   $("#newFol").submit(function () {
+                       $.post("/main/newFol", $(this).serialize(), function (data) {
+                           // alert("创建新文件: " + data);
+                           var lii = '<tr><td><button onclick="fun(' + data.fid + ')">' + data.fname + '</button></td></tr>';
+
+                           $("#yp_fol1").append(lii);
+                       });
+                       return false;
+                   });
+               })
+
+    </script>
+
+    <script>
+        
+    </script>
+</head>
+<body>
+<div id="yp_user">
+
+</div>
+<div id= "yp_fol">
+    <table id="yp_fol1">
+
+    </table>
+</div>
+<div id="yp_doc">
+    <table id="yp_doc1">
+
+    </table>
+</div>
+<div id="fileForm">
+    <div id="upload">
+        <br/>
+        <h2>文件上传</h2>
+        <form id="yp_newDoc" class="form-control" onsubmit="return false" method="post" enctype="multipart/form-data">
+            选择文件：<input type="file" name="upload"/><br/>
+            <input type="submit" onclick="newDol()" value="上传" class="button button-3d button-primary button-rounded"/>
+        </form>
+    </div>
+    <div id="yp_upload">
+        <br/>
+        <h2>新建文件夹</h2>
+        <form id="newFol" class="form-control" onsubmit="return false" method="POST" accept-charset="utf-8" >
+            文件夹名：<input type="text" name="folderName"/><br/>
+            <input type="hidden" name="path" value="" />
+            <input type="submit" value="新建" class="button button-3d button-primary button-rounded"/>
+        </form>
+    </div>
+</div>
+</body>
+</html>

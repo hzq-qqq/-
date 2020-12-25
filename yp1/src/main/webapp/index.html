@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script>
+        $(function () {
+            $("#indexform").submit(function () {
+                $.post("/main/login",$(this).serialize(),function (data) {
+                    if(data.status){
+                        location.href = "file.html";
+                    }
+                    else {
+                        $("#err").html(data.errMsg);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+</head>
+<body>
+<center>
+    <h1 style="color:red">登录</h1>
+    <div id="err" style="color: red"></div>
+    <form id="indexform"  action="" method="get">
+        <table border="0">
+            <tr>
+                <td>账号：</td>
+                <td><input type="text" name="username"></td>
+            </tr>
+            <tr>
+                <td>密码：</td>
+                <td><input type="password" name="password">
+                </td>
+            </tr>
+        </table>
+        <br>
+        <input type="submit" value="登录"  style="color:#BC8F8F">
+    </form>
+    <form action="register.html" method="post">
+        <input type="submit" value="注册" style="color:#BC8F8F">
+    </form>
+</center>
+</body>
+</html>
